@@ -16,3 +16,21 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Auth::routes();
+
+Route::group(['as'=>'admin.','prefix'=>'admin','middleware' => ['role:admin']],  function () {
+
+    Route::get('dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('admin.dashboard');
+    Route::resource('products', \App\Http\Controllers\Admin\ProductsController::class)->except(['show']);
+
+});
+
+Route::group(['middleware' => ['role:user|admin']], function () {
+
+    Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
+
+
+});
+
+
