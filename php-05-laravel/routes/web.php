@@ -13,6 +13,38 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::resource('categories', \App\Http\Controllers\CategoriesController::class)->only(['show', 'index']);
+Route::resource('products', \App\Http\Controllers\ProductsController::class)->only(['show', 'index']);
+
+Route::get('cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart');
+Route::post('cart/{product}', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
+Route::delete('cart', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+Route::post('cart/{product}/count', [\App\Http\Controllers\CartController::class, 'countUpdate'])->name('cart.count.update');
+
+Route::group(['as'=>'admin.','prefix'=>'admin','middleware' => ['role:admin']],  function () {
+
+    Route::get('dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('admin.dashboard');
+    Route::resource('products', \App\Http\Controllers\Admin\ProductsController::class)->except(['show']);
+    Route::resource('categories', \App\Http\Controllers\Admin\CategoriesController::class)->except(['show']);
+
+});
+
+Route::group(['middleware' => ['role:user|admin']], function () {
+
+    Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
+
+
+});
+
+Route::group(['middleware' => ['role:admin']],  function () {
+
+    Route::delete(
+        'ajax/images/{image}',
+        \App\Http\Controllers\Ajax\RemoveImageController::class
+    )->name('ajax.images.delete');
+
 });
