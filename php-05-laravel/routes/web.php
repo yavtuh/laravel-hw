@@ -36,7 +36,13 @@ Route::group(['as'=>'admin.','prefix'=>'admin','middleware' => ['role:admin']], 
 Route::group(['middleware' => ['role:user|admin']], function () {
     Route::post('product/{product}/rating/add', [\App\Http\Controllers\ProductsController::class, 'addRating'])->name('product.rating.add');
     Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
-
+    Route::name('account.')->prefix('account')->group(function(){
+        Route::get('/', [\App\Http\Controllers\Account\UsersController::class, 'index'])->name('index');
+        Route::put('{user}/update', [\App\Http\Controllers\Account\UsersController::class, 'update'])->name('update');
+        Route::get('{user}/edit', [\App\Http\Controllers\Account\UsersController::class, 'edit'])
+            ->name('edit')
+            ->middleware('can:view,user');
+    });
 
 });
 
