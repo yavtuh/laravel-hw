@@ -34,6 +34,10 @@ Route::group(['as'=>'admin.','prefix'=>'admin','middleware' => ['role:admin']], 
 });
 
 Route::group(['middleware' => ['role:user|admin']], function () {
+
+    Route::get('wishlist/{product}/add', [\App\Http\Controllers\WishListController::class, 'add'])->name('wishlist.add');
+    Route::delete('wishlist/{product}/delete', [\App\Http\Controllers\WishListController::class, 'delete'])->name('wishlist.delete');
+
     Route::post('product/{product}/rating/add', [\App\Http\Controllers\ProductsController::class, 'addRating'])->name('product.rating.add');
     Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
     Route::name('account.')->prefix('account')->group(function(){
@@ -42,7 +46,9 @@ Route::group(['middleware' => ['role:user|admin']], function () {
         Route::get('{user}/edit', [\App\Http\Controllers\Account\UsersController::class, 'edit'])
             ->name('edit')
             ->middleware('can:view,user');
+        Route::get('wishlist', \App\Http\Controllers\Account\WishListController::class)->name('wishlist');
     });
+
 
 });
 
