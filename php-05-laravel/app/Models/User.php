@@ -62,6 +62,11 @@ class User extends Authenticatable
         $this->wishes()->attach($product);
     }
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function removeFromWish(Product $product)
     {
         $this->wishes()->detach($product);
