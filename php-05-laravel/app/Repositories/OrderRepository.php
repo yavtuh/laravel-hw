@@ -45,11 +45,17 @@ class OrderRepository implements OrderRepositoryContract
     {
         $order = Order::where('vendor_order_id', $transactionOrderId)->firstOrFail();
 
-        if ($adapter->status === self::ORDER_STATUSES['completed']) {
-            $order->update(['status_id' => OrderStatus::paidStatus()->firstOrFail()?->id]);
-            }
+        $transaction = $order->transaction()->create((array) $adapter);
 
-        $order->transaction()->create((array) $adapter);
+        if ($adapter->status === self::ORDER_STATUSES['completed']) {
+
+            $order->update([
+                'status_id' => OrderStatus::paidStatus()->firstOrFail()?->id,
+                'transaction_id' => $transaction->id
+            ]);
+        }
+
+
 
         return $order;
     }

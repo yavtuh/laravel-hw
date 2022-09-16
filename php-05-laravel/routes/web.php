@@ -13,6 +13,15 @@ use App\Jobs\OrderCreatedNotificationJob;
 |
 */
 
+Route::get('invoice', function () {
+    $order = \App\Models\Order::all()->last();
+    $service = new \App\Services\InvoicesService();
+    $invoice = $service->generate($order);
+
+    $test = $invoice->save('public');
+    dd($test->url());
+});
+
 Route::get('send', function () {
     $order = \App\Models\Order::all()->random();
     OrderCreatedNotificationJob::dispatch($order)->onQueue('emails');
@@ -61,6 +70,12 @@ Route::group(['middleware' => ['role:user|admin']], function () {
         Route::get('wishlist', \App\Http\Controllers\Account\WishListController::class)->name('wishlist');
 
         Route::get('telegram/callback', \App\Http\Controllers\TelegramCallbackController::class)->name('telegram.callback');
+
+        Route::get('/order/{order}/invoice', \App\Http\Controllers\Invoices\DownloadInvoiceController::class)
+            ->name('orders.generate.invoice');
+
+        Route::name('account.')->prefix('account')->group(function () {
+
     });
     Route::prefix('paypal')->group(function() {
         Route::post('order/create', [\App\Http\Controllers\Payments\PaypalPaymentController::class, 'create']);
