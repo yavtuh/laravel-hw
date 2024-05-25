@@ -7,9 +7,11 @@ use App\Models\Image;
 use App\Events\OrderCreatedEvent;
 use App\Listeners\OrderCreatedListener;
 use App\Models\Product;
+use App\Models\Order;
 use App\Observers\CategoryObserver;
 use App\Observers\ImageObserver;
 use App\Observers\ProductObserver;
+use App\Observers\OrdersObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -34,7 +36,8 @@ class EventServiceProvider extends ServiceProvider
     protected $observers = [
         Image::class => [ImageObserver::class],
         Product::class => [ProductObserver::class],
-        Category::class => [CategoryObserver::class]
+        Category::class => [CategoryObserver::class],
+        Order::class => [OrdersObserver::class]
     ];
     /**
      * Register any events for your application.

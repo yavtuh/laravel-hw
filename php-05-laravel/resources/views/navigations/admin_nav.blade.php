@@ -30,3 +30,8 @@
         </a>
     </div>
 </li>
+<li class="nav-item">
+    <a class="dropdown-item" href="{{ route('admin.orders.index') }}">
+        {{ __('All orders') }}
+    </a>
+</li>

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Jobs\OrderCreatedNotificationJob;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('send', function () {
+    $order = \App\Models\Order::all()->random();
+    OrderCreatedNotificationJob::dispatch($order)->onQueue('emails');
+});
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -30,6 +35,12 @@ Route::group(['as'=>'admin.','prefix'=>'admin','middleware' => ['role:admin']], 
     Route::get('dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('admin.dashboard');
     Route::resource('products', \App\Http\Controllers\Admin\ProductsController::class)->except(['show']);
     Route::resource('categories', \App\Http\Controllers\Admin\CategoriesController::class)->except(['show']);
+    Route::name('orders')->group(function () {
+        Route::get('orders', [\App\Http\Controllers\Admin\OrdersController::class, 'index'])->name('.index');
+        Route::get('orders/{order}/edit', [\App\Http\Controllers\Admin\OrdersController::class, 'edit'])->name('.edit');
+        Route::put('orders/{order}', [\App\Http\Controllers\Admin\OrdersController::class, 'update'])->name('.update');
+    });
+
 
 });
 
@@ -48,6 +59,8 @@ Route::group(['middleware' => ['role:user|admin']], function () {
             ->name('edit')
             ->middleware('can:view,user');
         Route::get('wishlist', \App\Http\Controllers\Account\WishListController::class)->name('wishlist');
+
+        Route::get('telegram/callback', \App\Http\Controllers\TelegramCallbackController::class)->name('telegram.callback');
     });
     Route::prefix('paypal')->group(function() {
         Route::post('order/create', [\App\Http\Controllers\Payments\PaypalPaymentController::class, 'create']);
