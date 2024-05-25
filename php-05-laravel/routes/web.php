@@ -34,7 +34,7 @@ Route::group(['as'=>'admin.','prefix'=>'admin','middleware' => ['role:admin']], 
 });
 
 Route::group(['middleware' => ['role:user|admin']], function () {
-
+    Route::post('product/{product}/rating/add', [\App\Http\Controllers\ProductsController::class, 'addRating'])->name('product.rating.add');
     Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
 
 
@@ -48,3 +48,4 @@ Route::group(['middleware' => ['role:admin']],  function () {
     )->name('ajax.images.delete');
 
 });
+

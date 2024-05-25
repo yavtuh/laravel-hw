@@ -17,7 +17,14 @@ class ProductsController extends Controller
 
     public function show(Product $product): Renderable
     {
-//        $userRating = $product->getUserRating();
-        return view('products.show', compact('product'));
+        $userRating = $product->getUserRating();
+        return view('products.show', compact('product', 'userRating'));
+    }
+
+    public function addRating(Request $request, Product $product)
+    {
+        $product->rateOnce($request->get('star'));
+
+        return redirect()->back();
     }
 }

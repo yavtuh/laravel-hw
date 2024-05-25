@@ -9,6 +9,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resource/js/images-preview.js',
                 'resource/js/images-actions.js',
+                'resource/js/product-actions.js',
             ],
             refresh: true,
         }),

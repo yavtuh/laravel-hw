@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use willvincent\Rateable\Rateable;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, Rateable;
 
     protected $fillable =[
         'category_id',
@@ -65,5 +66,12 @@ class Product extends Model
         return $price < 0 ? 0 : round($price, 2);
     }
         );
+    }
+
+    public function getUserRating()
+    {
+        $ratings = $this->ratings()->where('rateable_id', $this->id)->get();
+
+        return $ratings->where('user_id', auth()->id())->first();
     }
 }
