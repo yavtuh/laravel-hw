@@ -1,11 +1,10 @@
 @extends('layouts.app')
 @section('content')
-
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <br>
-                <h3 class="text-center">{{ __('Create product') }}</h3>
+                <h3 class="text-center">{{ __('Edit product') }}</h3>
                 <hr>
             </div>
             <div class="col-md-12">
@@ -20,8 +19,9 @@
                 @endif
             </div>
             <div class="col-md-12">
-                <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    @method('PUT')
                     <div class="form-group row">
                         <label for="title" class="col-md-4 col-form-label text-md-right">{{ __('Title') }}</label>
                         <div class="col-md-6">
@@ -29,7 +29,7 @@
                                    type="text"
                                    class="form-control @error('title') is-invalid @enderror"
                                    name="title"
-                                   value="{{ old('title') }}"
+                                   value="{{ $product->title }}"
                                    autocomplete="title"
                                    autofocus
                             >
@@ -39,12 +39,15 @@
                         <label for="category"
                                class="col-md-4 col-form-label text-md-right">{{ __('Categories') }}</label>
                         <div class="col-md-6">
-                            <select name="category"
+                            <select
                                     id="category"
+                                    name="category_id"
                                     class="form-control @error('category') is-invalid @enderror"
                             >
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category['id'] }}"
+                                        {{ $category['id'] === $product->category->id ? 'selected' : '' }}
+                                    >{{ $category['name'] }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -56,7 +59,7 @@
                                    type="text"
                                    class="form-control @error('SKU') is-invalid @enderror"
                                    name="SKU"
-                                   value="{{ old('SKU') }}"
+                                   value="{{ $product->SKU }}"
                                    autocomplete="SKU"
                                    autofocus
                             >
@@ -69,7 +72,7 @@
                                    type="text"
                                    class="form-control @error('price') is-invalid @enderror"
                                    name="price"
-                                   value="{{ old('price') }}"
+                                   value="{{ $product->price }}"
                                    autocomplete="price"
                                    autofocus
                             >
@@ -82,7 +85,7 @@
                                    type="text"
                                    class="form-control @error('discount') is-invalid @enderror"
                                    name="discount"
-                                   value="{{ old('discount') }}"
+                                   value="{{ $product->discount }}"
                                    autocomplete="discount"
                                    autofocus
                             >
@@ -96,7 +99,7 @@
                                    type="number"
                                    class="form-control @error('in_stock') is-invalid @enderror"
                                    name="in_stock"
-                                   value="{{ old('in_stock') }}"
+                                   value="{{ $product->in_stock }}"
                                    autocomplete="in_stock"
                                    autofocus
                             >
@@ -110,7 +113,7 @@
                                       class="form-control @error('description') is-invalid @enderror"
                                       id="description"
                                       cols="30"
-                                      rows="10">{{ old('description') }}</textarea>
+                                      rows="10">{{ $product->description }}</textarea>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -121,7 +124,7 @@
                                       class="form-control @error('short_description') is-invalid @enderror"
                                       id="short_description"
                                       cols="30"
-                                      rows="10">{{ old('short_description') }}</textarea>
+                                      rows="10">{{ $product->short_description }}</textarea>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -130,7 +133,7 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <img src="#" id="thumbnail-preview" alt="">
+                                    <img src="{{ $product->thumbnailUrl  }}" style="height: 350px" id="thumbnail-preview" alt="">
                                 </div>
                                 <div class="col-md-6">
                                     <input type="file" name="thumbnail" id="thumbnail">
@@ -143,7 +146,17 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="row images-wrapper"></div>
+                                    <div class="row images-wrapper">
+                                        @foreach($product->images as $image)
+                                            @if(Storage::has($image->path))
+                                                <div class="col-sm-12 d-flex justify-content-center align-items-center">
+                                                    <img src="{{ $image->url }}" class="card-img-top" style="max-width: 80%; margin: 0 auto; display: block;">
+                                                    <a data-route="{{ route('ajax.images.delete', $image->id) }}"
+                                                       class="btn btn-danger remove-product-image">x</a>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
                                 </div>
                                 <div class="col-md-12">
                                     <input type="file" name="images[]" id="images" multiple>
@@ -154,7 +167,7 @@
 
                     <div class="form-group row">
                         <div class="col-md-10 text-right">
-                            <input type="submit" class="btn btn-info" value="Create">
+                            <input type="submit" class="btn btn-info" value="Update">
                         </div>
                     </div>
                 </form>
@@ -162,7 +175,7 @@
         </div>
     </div>
 @endsection
+
 @push('footer-scripts')
-    <!-- Scripts -->
-    @vite(['resources/js/images-preview.js'])
+    @vite(['resources/js/images-preview.js', 'resources/js/images-actions.js'])
 @endpush
