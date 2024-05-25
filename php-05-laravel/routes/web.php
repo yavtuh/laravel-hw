@@ -19,10 +19,10 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::group(['middleware' => ['role:admin']], function () {
+Route::group(['name'=>'admin.','prefix'=>'admin','middleware' => ['role:admin']],  function () {
 
     Route::get('/admin/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('admin.dashboard');
-
+    Route::resource('products', \App\Http\Controllers\Admin\ProductsController::class)->except(['show']);
 
 });
 
