@@ -16,6 +16,7 @@
         "laravel/telescope": "^4.9",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.0",
+        "laraveldaily/laravel-invoices": "^3.0",
         "predis/predis": "^2.0",
         "pschocke/laravel-telegram-login-widget": "^2.0",
         "spatie/laravel-permission": "^5.5",
